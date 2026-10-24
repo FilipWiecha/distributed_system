@@ -64,7 +64,7 @@ Java 25, Spring Boot, Maven, Spring Security, Redis (Streams), Apache Kafka, Liq
 ### Logowanie
 ![Logowanie](docs/1.png)
 
-### Logowanie
+### Przegląd konta
 ![Przegląd konta](docs/2.png)
 
 ### Sesje
