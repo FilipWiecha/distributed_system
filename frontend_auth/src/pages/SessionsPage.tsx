@@ -15,6 +15,7 @@ import {
   sessionDate,
 } from "../features/sessions/service";
 import type { Session, SessionsSlice } from "../features/sessions/types";
+import { refreshSession } from "../features/auth/services/AuthService";
 
 type Dialog =
   | { kind: "details"; id: string }
@@ -80,6 +81,7 @@ export function SessionsPage() {
     try {
       if (dialog.kind === "all") {
         await revokeAllSessions();
+        await refreshSession();
         invalidateSession();
         return;
       }
