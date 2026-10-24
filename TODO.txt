@@ -1,0 +1,10 @@
+1. Validacja danych:
+	- backend: validacja + zwracanie czemu nie poprwane.
+	- frontend: validacja przed wysłaniem zapytania.
+	
+2. Obsługa wyjątków:
+	- gateway
+	-auth
+	-resourse
+	
+3. Indentyfikacja urządzeń na postawie sessionId, czyli nie usuwanie ciasteczek przy logout, przy logowaniu ponowna rotacja sessionId.

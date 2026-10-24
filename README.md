@@ -59,6 +59,26 @@ X-Client-Type: APP   # aplikacja mobilna
 
 Java 25, Spring Boot, Maven, Spring Security, Redis (Streams), Apache Kafka, Liquibase, PostgreSQL, Nginx, Docker Compose, React, TypeScript
 
+## Wygląd
+
+### Logowanie
+![Logowanie](docs/1.png)
+
+### Logowanie
+![Przegląd konta](docs/2.png)
+
+### Sesje
+![Sesje](docs/3.png)
+
+### Bezpieczeństwo
+![Bezpieczeństwo](docs/4.png)
+
+### Przegląd treningów
+![Przegląd treningów](docs/5.png)
+
+### Szczegóły treningu
+![Szczegóły treningu](docs/6.png)
+
 ## Uruchomienie
 
 ### Wymagania
