@@ -1,0 +1,28 @@
+spring:
+  application: 
+    name: queueclient
+  
+  kafka:
+    bootstrap-servers: localhost:9092
+
+  datasource:
+    url: ${AUTH_DB_URL:jdbc:postgresql://localhost:5432/auth_db}
+    username: ${AUTH_DB_USERNAME:admin}
+    password: ${AUTH_DB_PASSWORD:admin}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6379
+      connection-timeout: 2s
+      timeout: 2s
+      password: admin

@@ -1,0 +1,212 @@
+/* Zmienne (--glass-*, --radius-*, --color-*) pochodzą z App.css.
+   Panele celowo bez backdrop-filter: przewijana lista + rozmycie = lag. */
+
+.content {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 24px;
+}
+
+/* ---------- Szybkie akcje ---------- */
+.actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--radius-l);
+  text-decoration: none;
+  color: var(--color-text-main);
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.15s var(--ease);
+}
+
+.tile:active {
+  transform: scale(0.98);
+}
+
+.tileIcon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.tileBody {
+  min-width: 0;
+}
+
+.tileTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.tileText {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--color-text-light-muted);
+}
+
+.chevron {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Panele z listami ---------- */
+.columns {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.panel {
+  padding: 20px;
+  border-radius: var(--radius-l);
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  min-width: 0;
+}
+
+.panelHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.seeAll {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.seeAll:hover {
+  text-decoration: underline;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 -10px;
+  padding: 10px;
+  border-radius: var(--radius-m);
+  text-decoration: none;
+  color: var(--color-text-main);
+  transition: background-color 0.15s var(--ease);
+}
+
+.row:hover {
+  background: rgba(60, 60, 67, 0.06);
+}
+
+/* Znacznik daty w stylu kalendarza */
+.chip {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(60, 60, 67, 0.07);
+  color: var(--color-text-light-muted);
+}
+
+.chipMonth {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-primary);
+}
+
+.chipDay {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--color-text-main);
+}
+
+.rowMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.rowTitle,
+.rowMeta {
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rowTitle {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.rowMeta {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--color-text-light-muted);
+}
+
+.empty {
+  padding: 28px 12px 12px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-light-muted);
+}
+
+.empty p {
+  margin: 0 0 14px;
+}
+
+.emptyAction {
+  text-decoration: none;
+}
+
+@media (max-width: 900px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .actions {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}

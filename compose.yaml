@@ -1,0 +1,142 @@
+# Full stack: `docker compose up --build`, then open http://account.mojprojekt.test
+# (requires hosts entries - see DOCKER.md).
+# Local-development infrastructure only (DB/Redis/Kafka on localhost): compose.infra.yaml
+
+name: distributed_system
+
+x-spring-build: &spring-build
+  context: .
+  dockerfile: docker/spring.Dockerfile
+
+x-auth-db-env: &auth-db-env
+  AUTH_DB_URL: jdbc:postgresql://postgres:5432/auth_db
+  AUTH_DB_USERNAME: admin
+  AUTH_DB_PASSWORD: ${DB_PASSWORD:-admin}
+  SPRING_DATA_REDIS_HOST: redis
+  SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-admin}
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
+services:
+  # ---------- infrastructure ----------
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+      POSTGRES_DB: auth_db
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d auth_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:-admin}"]
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a '${REDIS_PASSWORD:-admin}' --no-auth-warning ping | grep PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  kafka:
+    image: apache/kafka:4.0.0
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 15s
+
+  # ---------- application ----------
+  auth:
+    build:
+      <<: *spring-build
+      args:
+        SERVICE: auth
+    environment:
+      <<: *auth-db-env
+      AUTH_BIND_ADDRESS: 0.0.0.0
+      AUTH_PORT: 8000
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: INFO
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+    restart: on-failure
+
+  queueclient:
+    build:
+      <<: *spring-build
+      args:
+        SERVICE: queueclient
+    environment:
+      <<: *auth-db-env
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+      auth: { condition: service_started }
+    restart: on-failure
+
+  resource:
+    build:
+      <<: *spring-build
+      args:
+        SERVICE: resource
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/gym_db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-admin}
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: on-failure
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    restart: unless-stopped
+
+  gateway:
+    build:
+      <<: *spring-build
+      args:
+        SERVICE: gateway
+    environment:
+      AUTH_SERVICE_URL: http://auth:8000
+      ACCOUNT_FRONTEND_URL: http://frontend:8081
+      GYM_SERVICE_URL: http://resource:9000
+      GYM_FRONTEND_URL: http://frontend:8082
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_CLOUD_GATEWAY: INFO
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB_SERVLET: INFO
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: INFO
+    ports:
+      - "80:80"
+    depends_on:
+      - auth
+      - resource
+      - frontend
+    restart: on-failure
+
+volumes:
+  postgres:
+  redis:

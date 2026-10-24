@@ -1,0 +1,7 @@
+/var/
+/target/
+*.jwk
+*.p12
+*.log
+.env
+.env.*

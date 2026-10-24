@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: auth
+
+  profiles:
+    default: dev
+
+  datasource:
+    url: ${AUTH_DB_URL:jdbc:postgresql://localhost:5432/auth_db}
+    username: ${AUTH_DB_USERNAME:admin}
+    password: ${AUTH_DB_PASSWORD:admin}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  docker:
+    compose:
+      enabled: false
+
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6379
+      connection-timeout: 2s
+      timeout: 2s
+      password: admin
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+server:
+  port: ${AUTH_PORT:8000}
+
+  address: ${AUTH_BIND_ADDRESS:127.0.0.1}
+
+
+tokens:
+  accesstoken:
+    exp: 10 #In minutes
+    keys:
+      private-key: classpath:keys/rsa/private.pem
+      public-key: classpath:keys/rsa/public.pem
+
+  refreshtoken:
+    algorithm: HmacSHA256
+    exp: 10 #In days
+    key: 7fff215133260b42f1c1d3a34f05d1f8413acf5783448bae5ebbaf7ecf8376eb
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: WARN
+

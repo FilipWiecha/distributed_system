@@ -1,0 +1,60 @@
+server:
+  port: 80
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.web.servlet: DEBUG
+    org.springframework.security: TRACE
+
+spring:
+  application:
+    name: gateway
+
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+
+            - id: auth_server
+              uri: ${AUTH_SERVICE_URL:http://localhost:8000}
+              predicates:
+                - Path=/api/auth/**
+                - Host=account.mojprojekt.test
+              filters:
+                - StripPrefix=1
+                - authEndpointTokensManagment
+              order: 0
+
+            - id: nginx
+              uri: ${ACCOUNT_FRONTEND_URL:http://localhost:8081}
+              predicates:
+                - Path=/**
+                - Host=account.mojprojekt.test
+              order: 50
+
+            - id: gym_api
+              uri: ${GYM_SERVICE_URL:http://localhost:9000}
+              predicates:
+                - Path=/api/**
+                - Host=gym.mojprojekt.test
+              filters:
+                - StripPrefix=1
+                - defaultTokensManagment
+              order: 0
+
+            - id: gym_frontend
+              uri: ${GYM_FRONTEND_URL:http://localhost:8082}
+              predicates:
+                - Path=/**
+                - Host=gym.mojprojekt.test
+              order: 50
+
+            - id: subdomain_not_found
+              uri: http://account.mojprojekt.test
+              predicates:
+                - Host=*.mojprojekt.test, mojprojekt.test
+              filters:
+                - RedirectTo=302, http://account.mojprojekt.test
+              order: 100

@@ -1,0 +1,6 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/user/001-create-users-table.sql
+
+  - include:
+      file: db/changelog/changes/session/001-create-sessions-table.sql

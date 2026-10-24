@@ -1,0 +1,16 @@
+databaseChangeLog:
+
+  - include:
+      file: db/changelog/changes/workout/001-create-workouts-table.sql
+  
+  - include:
+      file: db/changelog/changes/exercise/001-create-exercises-table.sql
+
+  - include:
+      file: db/changelog/changes/training_plans/001-create-training-plans-table.sql
+
+  - include:
+      file: db/changelog/changes/training_plans/001-create-plan-exercises-entry-table.sql
+      
+  - include:
+      file: db/changelog/changes/workout/001-create-workout-exercises-entry-table.sql
