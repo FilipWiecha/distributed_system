@@ -79,6 +79,22 @@ Java 25, Spring Boot, Maven, Spring Security, Redis (Streams), Apache Kafka, Liq
 ### Szczegóły treningu
 ![Szczegóły treningu](docs/6.png)
 
+
+## Status projektu
+ 
+Projekt jest w **fazie rozwoju**. Wszystkie kluczowe funkcje (architektura, zarządzanie sesjami, aplikacja treningowa) są w pełni sprawne. Planowane są jeszcze usprawnienia i dodatkowe elementy:
+ 
+1. **Walidacja danych**
+   - backend: walidacja danych wejściowych wraz ze zwracaniem czytelnej informacji, dlaczego dane są niepoprawne,
+   - frontend: walidacja przed wysłaniem zapytania.
+2. **Obsługa dodatkowych wyjątków w**
+   - `gateway`,
+   - `auth`,
+   - `resource`.
+3. **Identyfikacja urządzeń na podstawie `sessionId`**
+   - brak usuwania ciasteczka przy wylogowaniu (pozwala rozpoznać urządzenie),
+   - rotacja `sessionId` przy ponownym logowaniu, wcześniej unieważnionym refresh tokenem.
+
 ## Uruchomienie
 
 ### Wymagania
